@@ -108,11 +108,21 @@ type Harness interface {
 }
 
 type HarnessBinding struct {
-	ExecutionID         string
-	AgentArtifactSHA256 string
-	TicketID            string
-	CaseID              string
-	Deadline            time.Time
+	ExecutionID            string
+	AgentID                string
+	RunRowID               string
+	AgentArtifactSHA256    string
+	TicketID               string
+	CaseID                 string
+	Deadline               time.Time
+	BenchVersion           int
+	ScreenedImageSHA256    string
+	ScreenedImageSize      int64
+	ScreenedImageID        string
+	ScreenedImageRef       string
+	ScreeningPolicyVersion int
+	ImageURL               string
+	ImageExpiresAt         time.Time
 }
 
 // InferenceGateway is satisfied by codinggateway.Gateway.
@@ -128,6 +138,7 @@ type InferenceGateway interface {
 type InferenceActivation struct {
 	Policy     codingcontract.InferencePolicy
 	Capability codingplatform.GrantCapability
+	Revocation codingplatform.RevocationCapability
 	Authorizer codinggateway.ActivationAuthorizer
 }
 
