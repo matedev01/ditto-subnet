@@ -31,6 +31,7 @@ import (
 //	POST /api/v1/inference/embeddings
 //	POST /api/v1/inference/confirmation/chat/completions
 //	POST /api/v1/inference/confirmation/embeddings
+//	POST /api/v1/inference/coding/chat/completions
 //
 // Handlers are plain http.Handlers; they receive the request-ID context from
 // the middleware stack and are expected to write relayhttp envelopes for
@@ -41,6 +42,7 @@ type InferenceHandlers struct {
 	Embeddings                  http.Handler
 	ConfirmationChatCompletions http.Handler
 	ConfirmationEmbeddings      http.Handler
+	CodingChatCompletions       http.Handler
 }
 
 // UploadHandlers is the narrow upload-admission registration point. The
@@ -168,6 +170,9 @@ func (s *Server) registerInferenceRoutes(register func(method, path string, h ht
 	if s.inference.ConfirmationEmbeddings != nil {
 		register(http.MethodPost, "/api/v1/inference/confirmation/embeddings", s.inference.ConfirmationEmbeddings)
 	}
+	if s.inference.CodingChatCompletions != nil {
+		register(http.MethodPost, "/api/v1/inference/coding/chat/completions", s.inference.CodingChatCompletions)
+	}
 }
 
 // envelopeFallback answers everything the method-qualified patterns did not
@@ -286,9 +291,17 @@ func (s *Server) Run(ctx context.Context) error {
 // draining slot can finish its in-flight inference requests while Caddy sends
 // new calls to the sibling. The drain therefore outlasts the inference
 // timeout (plus margin), floored at the Python relay's
-// timeout_graceful_shutdown=30, and stays inside pm2's 135s SIGKILL budget.
+// timeout_graceful_shutdown=30. The disabled-by-default coding lane raises
+// this to its locked 300s provider timeout plus margin; its later deployment
+// PR must raise pm2's kill_timeout before enabling the lane.
 func (s *Server) drainTimeout() time.Duration {
 	d := time.Duration(s.cfg.Inference.TimeoutSeconds)*time.Second + 5*time.Second
+	if s.cfg.Inference.CodingEnabled {
+		codingDrain := 305 * time.Second
+		if codingDrain > d {
+			d = codingDrain
+		}
+	}
 	if d < 30*time.Second {
 		return 30 * time.Second
 	}
