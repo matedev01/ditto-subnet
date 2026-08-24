@@ -3179,7 +3179,7 @@ ALTER TABLE ONLY public.coding_catalog_exposures
 --
 
 ALTER TABLE ONLY public.coding_catalog_exposures
-    ADD CONSTRAINT coding_catalog_exposures_task_version_key UNIQUE (release_row_id, task_version_id);
+    ADD CONSTRAINT coding_catalog_exposures_task_version_key UNIQUE (task_version_id);
 
 
 --
