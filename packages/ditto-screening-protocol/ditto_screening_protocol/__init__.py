@@ -6,6 +6,14 @@ from ditto_screening_protocol.confirmation_progress import (
     ConfirmationProgressStage,
     confirmation_progress_signing_token,
 )
+from ditto_screening_protocol.coding_source_screen import (
+    CodingSourceScreenEvidence,
+    CodingSourceScreenFinding,
+    CodingSourceScreenOutcome,
+    CodingSourceScreenSeverity,
+    coding_source_screen_digest,
+    coding_source_screen_signing_message,
+)
 from ditto_screening_protocol.models import (
     SCREENING_POLICY_VERSION,
     AgentStatus,
@@ -46,6 +54,10 @@ from ditto_screening_protocol.signing import verdict_signing_message
 __all__ = [
     "MAX_CONFIRMATION_SLOTS",
     "SCREENING_POLICY_VERSION",
+    "CodingSourceScreenEvidence",
+    "CodingSourceScreenFinding",
+    "CodingSourceScreenOutcome",
+    "CodingSourceScreenSeverity",
     "AgentStatus",
     "ArtifactResponse",
     "ConfirmationProgress",
@@ -81,5 +93,7 @@ __all__ = [
     "SubmissionSourceReviewResponse",
     "SubmissionSourceReviewStatus",
     "confirmation_progress_signing_token",
+    "coding_source_screen_digest",
+    "coding_source_screen_signing_message",
     "verdict_signing_message",
 ]
